@@ -1,4 +1,4 @@
-Permite importar la lista de productos, precios, SKU, imágenes, del archivo CSV de wordpress y pegarlo en el archivo de carga masiva de fallabela.
+Permite importar la lista de productos, precios, SKU, imágenes, del archivo CSV de wordpress y pegarlo en el archivo de carga masiva de falabella.
 
 Algunos datos de la tabla son constantes y se puede modificar posteriormente desde el seller center, o en el archivo de excel una vez se encuentre relleno con los datos importados al ejecutar el código.
  
