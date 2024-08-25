@@ -1,8 +1,11 @@
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
-import re
 from bs4 import BeautifulSoup
+from pandasgui import show
+import os
+import shutil
+
 
 def cargar_csv():
     # Crear una ventana oculta de Tkinter
@@ -79,6 +82,13 @@ def convertir_html_a_texto(texto_html):
     else:
         # Si no es un string, devolver el valor tal como está
         return texto_html
+    
+def eliminar_caracteres(texto):
+    if isinstance(texto, str):
+        texto = texto.replace('\n','')
+        return texto
+    else:   
+        return texto
 
 def editar_df_excel(ajustar_tamano_dataframe, df_csv, df_imagenes, df_excel):
     if df_excel is not None:
@@ -119,13 +129,14 @@ def editar_df_excel(ajustar_tamano_dataframe, df_csv, df_imagenes, df_excel):
         df_excel['Imagen8 #IM8']= df_imagenes['Imagen8']
     return df_excel
 
-
-
 # Cargar el archivo CSV caja de dialogo Tkinter
 df_csv = cargar_csv()
 
 # Aplicar la función convertir HTML a TEXTO a la columna 'descripcion'
 df_csv['Descripción'] = df_csv['Descripción'].apply(convertir_html_a_texto)
+
+# Aplicar la función para eliminar el simbolo "\n" al texto en la columna descripcion
+#df_csv['Descripción'] = df_csv['Descripción'].apply(eliminar_caracteres)
 
 # Cargamos un dataframe con las direcciones de las las imágenes 
 df_imagenes = crear_dataframe_imagenes(df_csv)
@@ -136,12 +147,27 @@ df_excel, excel_path = cargar_excel(skip_rows=3)
 # Llamamos a la funcion que va a editar el contenido dataframe
 df_excel = editar_df_excel(ajustar_tamano_dataframe, df_csv, df_imagenes, df_excel)
 
+# Obtener la carpeta y el nombre base del archivo original
+carpeta = os.path.dirname(excel_path)
+nombre_archivo = os.path.basename(excel_path)
+
+# Separar el nombre del archivo y la extensión
+nombre, extension = os.path.splitext(nombre_archivo)
+
+# Crear el nuevo nombre del archivo añadiendo "_modificado"
+nuevo_nombre = f"{nombre}_rellenado{extension}"
+
+# Crear la ruta completa para el nuevo archivo
+nueva_ruta = os.path.join(carpeta, nuevo_nombre)
+
+# Copiar el archivo original a la nueva ruta
+shutil.copy2(excel_path, nueva_ruta)
+
 # Escribimos el archivo de excel con los datos del dataframe
-    
-with pd.ExcelWriter(excel_path, engine='openpyxl', mode='a',if_sheet_exists='overlay') as writer:
+with pd.ExcelWriter(nueva_ruta, engine='openpyxl', mode='a',if_sheet_exists='overlay') as writer:
         df_excel.to_excel(writer, index=False, startrow=4, sheet_name="Subir plantilla",header=False)
 print("Archivo Excel modificado y guardado correctamente.")
 
-    
+show(df_excel) 
 
    
