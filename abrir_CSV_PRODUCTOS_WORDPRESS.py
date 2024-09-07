@@ -4,7 +4,7 @@ from tkinter import filedialog
 from bs4 import BeautifulSoup
 from pandasgui import show
 import os
-import shutil
+import shutil 
 
 
 def cargar_csv():
